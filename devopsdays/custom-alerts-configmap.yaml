@@ -1,0 +1,18 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    prometheus_config: "1"
+  name: my-custom-alerts-config
+data:
+  my-custom-rules.yaml: |-
+    groups:
+    - name: sre-team
+      rules:
+      - alert: PodLowPVC80
+        expr: (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes * 100) > 80
+        annotations:
+          description: "PVC {{ $labels.persistentvolumeclaim }} disk usage is above 80% (current value is: {{ $value }})"
+        for: 5m
+        labels:
+          severity: HIGH
